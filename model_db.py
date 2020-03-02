@@ -4,6 +4,8 @@ from sqlalchemy import Column, Integer, Float, Date, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import pandas as pd
+
 
 def Load_Data(file_name):
     data = genfromtxt(file_name, delimiter=',', skip_header=1, converters={0: lambda s: str(s)})
@@ -36,47 +38,8 @@ class Song_Features(Base):
     time_signature = Column(Integer)
     valence = Column(Float)
 
-if __name__ == "__main__":
-    t = time()
-
-    #Create the database
-    engine = create_engine('sqlite:///spotify_songs.db')
-    Base.metadata.create_all(engine)
-
-    #Create the session
-    session = sessionmaker()
-    session.configure(bind=engine)
-    s = session()
-
-    try:
-        file_name = "https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv"
-        data = Load_Data(file_name) 
-
-        for i in data:
-            record = Song_Features(**{
-                'genre' : [0],
-                'artist_name' : i[1],
-                'track_name' : i[2],
-                'track_id' : i[3],
-                'popularity' : i[4],
-                'acousticness' : i[5],
-                'danceability' : i[6],
-                'duration_ms' : i[7],
-                'energy' : i[8],
-                'instrumentalness' : i[9],
-                'key' : i[10],
-                'liveness' : i[11],
-                'loudness' : i[12],
-                'mode' : i[13],
-                'speechiness' : i[14],
-                'tempo' : i[15],
-                'time_signature' : i[16],
-                'valence' : i[17]
-            })
-            s.add(record) #Add all the records
-
-        s.commit() #Attempt to commit all the records
-    except:
-        s.rollback() #Rollback the changes on error
-    finally:
-        s.close() #Close the connection
+engine = create_engine('sqlite:///Spotify_Songs.db')
+Base.metadata.create_all(engine)
+file_name = 'https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv'
+df = pd.read_csv(file_name)
+df.to_sql(con=engine, index_label='id', name=Song_Features.__tablename__, if_exists='replace')
