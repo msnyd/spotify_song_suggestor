@@ -6,11 +6,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
 
-
-def Load_Data(file_name):
-    data = genfromtxt(file_name, delimiter=',', skip_header=1, converters={0: lambda s: str(s)})
-    return data.tolist()
-
 Base = declarative_base()
 
 class Song_Features(Base):
