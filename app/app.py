@@ -30,7 +30,7 @@ def create_app():
         pass
 
     #Model returns a list of songs and we return the top 10
-    @app.route('/get/songs') #methods=['GET'])
+    @app.route('/songs', methods=['GET']) #methods=['GET'])
     def get_songs():
         conn = sqlite3.connect('Spotify_Songs.db')
         conn.row_factory = dict_factory
@@ -39,3 +39,5 @@ def create_app():
         return jsonify(all_songs)
 
     return app
+
+
