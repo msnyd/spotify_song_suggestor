@@ -8,7 +8,7 @@ import pandas as pd
 
 Base = declarative_base()
 
-class Song_Features(Base):
+class Songs(Base):
     #Tell SQLAlchemy what the table name is and if there's any table-specific arguments it should know about
     __tablename__ = 'Spotify_Songs'
     __table_args__ = {'sqlite_autoincrement': True}
