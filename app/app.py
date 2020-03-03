@@ -14,12 +14,12 @@ def dict_factory(cursor, row):
 def create_app():
     app = Flask(__name__)
 
-    engine = create_engine('sqlite:///Spotify_Songs.db')
-    Songs.metadata.create_all(engine)
-    file_name = 'data\SpotifyFeatures.csv'
-    df = pd.read_csv(file_name)
-    DB = df.to_sql(con=engine, index_label='id',
-               name=Songs.__tablename__, if_exists='replace')
+    # engine = create_engine('sqlite:///Spotify_Songs.db')
+    # Songs.metadata.create_all(engine)
+    # file_name = 'data\SpotifyFeatures.csv'
+    # df = pd.read_csv(file_name)
+    # DB = df.to_sql(con=engine, index_label='id',
+    #            name=Songs.__tablename__, if_exists='replace')
 
     @app.route('/')
     def hello_world():
