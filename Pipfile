@@ -9,7 +9,6 @@ verify_ssl = true
 gunicorn = "*"
 flask = "*"
 numpy = "*"
-pandas = "*"
 flask-sqlalchemy = "*"
 psycopg2 = "*"
 
