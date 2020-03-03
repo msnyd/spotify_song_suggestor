@@ -11,6 +11,9 @@ flask = "*"
 numpy = "*"
 flask-sqlalchemy = "*"
 psycopg2 = "*"
+flask-cors = "*"
+pandas = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
