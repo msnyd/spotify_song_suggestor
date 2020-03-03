@@ -1,6 +1,5 @@
 from flask import Flask, jsonify
 from .model_db import Songs
-import pandas as pd
 from sqlalchemy import create_engine
 import sqlite3
 
