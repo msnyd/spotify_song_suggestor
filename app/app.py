@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 from typing import List, Tuple
 
 DB = SQLAlchemy()
-
+df = pd.read_csv('https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv')
 
 def model_creation():
     df = pd.read_csv('https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv')
