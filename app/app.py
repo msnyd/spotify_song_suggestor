@@ -76,7 +76,7 @@ def create_app():
         return jsonify(all_songs)
 
     @app.route('/track/<track_id>', methods=['GET']) #/<track_id>
-    def track():
+    def track(track_id):
         #track_id = track_id
         conn = sqlite3.connect('Spotify_Songs.db')
         conn.row_factory = dict_factory
