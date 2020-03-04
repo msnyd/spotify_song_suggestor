@@ -78,6 +78,7 @@ def create_app():
     @app.route('/track', methods=['GET']) #/<track_id>
     def track():
         #track_id = track_id
+        conn = sqlite3.connect('Spotify_Songs.db')
         conn.row_factory = dict_factory
         curs = conn.cursor()
         all_songs = curs.execute('SELECT * FROM songs LIMIT 10;').fetchall()
