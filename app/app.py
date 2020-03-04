@@ -46,7 +46,9 @@ def model_creation():
     features = list(df.columns[4:])
     X = df[features].values
 
-    return neigh.fit(X)
+    neigh.fit(X)
+
+    return neigh
 
 
 def closest_ten(df: pd.DataFrame, X_array: np.ndarray ,song_id: int) -> List[Tuple] :
@@ -102,6 +104,36 @@ def dict_factory(cursor, row):
 def create_app():
     app = Flask(__name__)
 
+    
+    df = pd.read_csv('https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv')
+
+    def pre_process(df):
+        time_sig_encoding = { '0/4' : 0, '1/4' : 1, 
+                        '3/4' : 3, '4/4' : 4,
+                        '5/4' : 5}
+        key_encoding = { 'A' : 0, 'A#' : 1, 'B' : 2,
+                    'C' : 3,  'C#' : 4,  'D' : 5,
+                    'D#' : 6, 'E' : 7, 'F' : 8,
+                    'F#' : 9, 'G' : 10, 'G#' : 11 }
+        mode_encoding = { 'Major':0, 'Minor':1}      
+        df['key'] = df['key'].map(key_encoding)
+        df['time_signature'] = df['time_signature'].map(time_sig_encoding)
+        df['mode'] = df['mode'].map(mode_encoding)
+        # helper function to one hot encode genre
+        def encode_and_bind(original_dataframe, feature_to_encode):
+            dummies = pd.get_dummies(original_dataframe[[feature_to_encode]])
+            res = pd.concat([original_dataframe, dummies], axis=1)
+            return(res)
+        df = encode_and_bind(df, 'genre')
+        return df
+
+    processed_df = pre_process(df)
+    
+    neigh = NearestNeighbors(n_neighbors=11)
+    features = list(processed_df.columns[4:])
+    X = processed_df[features].values
+
+    neigh.fit(X)
 
     @app.route('/populate')
     def populate():
@@ -115,6 +147,7 @@ def create_app():
 
     @app.route('/')
     def hello_world():
+
         return "Welcome to our Spotify API!  Route to /populate first to populate the database"
 
     #TODO make a route that takes in json data and converts it to match the database?
@@ -134,8 +167,6 @@ def create_app():
 
     @app.route('/track/<track_id>', methods=['GET']) #/<track_id>
     def track(track_id):
-        track_id = track_id
-        X = model_creation()
         song_recs = closest_ten(10, X, track_id)
         return jsonify(song_recs)
 
