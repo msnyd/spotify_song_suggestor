@@ -13,43 +13,6 @@ from typing import List, Tuple
 DB = SQLAlchemy()
 df = pd.read_csv('https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv')
 
-def model_creation():
-    df = pd.read_csv('https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv')
-
-    df = df.dropna() # drop null values
-
-    time_sig_encoding = { '0/4' : 0, '1/4' : 1, 
-                        '3/4' : 3, '4/4' : 4,
-                        '5/4' : 5}
-
-    key_encoding = { 'A' : 0, 'A#' : 1, 'B' : 2,
-                    'C' : 3,  'C#' : 4,  'D' : 5,
-                    'D#' : 6, 'E' : 7, 'F' : 8,
-                    'F#' : 9, 'G' : 10, 'G#' : 11 }
-
-    mode_encoding = { 'Major':0, 'Minor':1}      
-
-    df['key'] = df['key'].map(key_encoding)
-    df['time_signature'] = df['time_signature'].map(time_sig_encoding)
-    df['mode'] = df['mode'].map(mode_encoding)
-
-    # helper function to one hot encode genre
-
-    def encode_and_bind(original_dataframe, feature_to_encode):
-        dummies = pd.get_dummies(original_dataframe[[feature_to_encode]])
-        res = pd.concat([original_dataframe, dummies], axis=1)
-        return(res)
-
-    df = encode_and_bind(df, 'genre')
-
-    neigh = NearestNeighbors(n_neighbors=11)
-    features = list(df.columns[4:])
-    X = df[features].values
-
-    neigh.fit(X)
-
-    return neigh
-
 
 def closest_ten(df: pd.DataFrame, X_array: np.ndarray ,song_id: int) -> List[Tuple] :
     song = df.iloc[song_id]
@@ -58,7 +21,6 @@ def closest_ten(df: pd.DataFrame, X_array: np.ndarray ,song_id: int) -> List[Tup
     song_list = []
     for idx in neighbors[0][2:]: 
         row = df.iloc[idx]
-    # print(f'Artist: {row.artist_name} - Track: {row.track_name}')
         song_list.append((row.artist_name, row.track_name))
     return song_list
 
@@ -127,6 +89,9 @@ def create_app():
         df = encode_and_bind(df, 'genre')
         return df
 
+    """
+    This will run the nearest neighbors model when we instantiate the app.
+    """
     processed_df = pre_process(df)
     
     neigh = NearestNeighbors(n_neighbors=11)
@@ -139,6 +104,7 @@ def create_app():
     def populate():
         engine = create_engine('sqlite:///Spotify_Songs.db')
         Songs.metadata.create_all(engine)
+        DB.drop_all()
         file_name = 'https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv'
         df = pd.read_csv(file_name)
         DB = df.to_sql(con=engine, index_label='id',
@@ -167,7 +133,7 @@ def create_app():
 
     @app.route('/track/<track_id>', methods=['GET']) #/<track_id>
     def track(track_id):
-        song_recs = closest_ten(10, X, track_id)
+        song_recs = closest_ten(df, X, track_id)
         return jsonify(song_recs)
 
 
