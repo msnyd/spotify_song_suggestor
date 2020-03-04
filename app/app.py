@@ -45,12 +45,8 @@ def model_creation():
     neigh = NearestNeighbors(n_neighbors=11)
     features = list(df.columns[4:])
     X = df[features].values
-    # y = df[target]
 
-    X.shape # y.shape
-
-
-    neigh.fit(X)
+    return neigh.fit(X)
 
 
 def closest_ten(df: pd.DataFrame, X_array: np.ndarray ,song_id: int) -> List[Tuple] :
@@ -139,7 +135,7 @@ def create_app():
     @app.route('/track/<track_id>', methods=['GET']) #/<track_id>
     def track(track_id):
         track_id = track_id
-        model_creation()
+        X = model_creation()
         song_recs = closest_ten(10, X, track_id)
         return jsonify(song_recs)
 
