@@ -75,13 +75,13 @@ def create_app():
 
         return jsonify(all_songs)
 
-    @app.route('/track/<track_id>', methods=['GET'])
+    @app.route('/track', methods=['GET']) #/<track_id>
     def track():
-        track_id = track_id
+        #track_id = track_id
         conn.row_factory = dict_factory
         curs = conn.cursor()
         all_songs = curs.execute('SELECT * FROM songs LIMIT 10;').fetchall()
         return jsonify(all_songs)
 
-        
+
     return app
