@@ -4,7 +4,6 @@ import sqlite3
 import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
-from .ml_model import model_creatiom
 import numpy as np 
 from sklearn import preprocessing # for category encoder
 from sklearn.neighbors import NearestNeighbors
