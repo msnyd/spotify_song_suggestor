@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from typing import List, Tuple
 
 DB = SQLAlchemy()
-df = pd.read_csv('app\most_popular.csv')
+df = pd.read_csv('most_popular_spotify_songs.csv')
 
 
 
@@ -58,12 +58,15 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://Spotify_Songs.db"
     engine = create_engine('sqlite:///Spotify_Songs.db')
     Songs.metadata.create_all(engine)
-    file_name = r'app\most_popular.csv'
+    file_name = 'most_popular_spotify_songs.csv'
     df = pd.read_csv(file_name)
+
+    DB.drop_all()
+    DB.create_all()
     db = df.to_sql(con=engine, index_label='id',
             name=Songs.__tablename__, if_exists='replace')
     
-    df = pd.read_csv(r'app\most_popular.csv')
+    df = pd.read_csv('most_popular_spotify_songs.csv')
 
     def pre_process(df):
         time_sig_encoding = { '0/4' : 0, '1/4' : 1, 
@@ -98,7 +101,7 @@ def create_app():
 
     engine = create_engine('sqlite:///Spotify_Songs.db')
     Songs.metadata.create_all(engine)
-    file_name = r'app\most_popular.csv'
+    file_name = 'most_popular_spotify_songs.csv'
     df = pd.read_csv(file_name)
     db = df.to_sql(con=engine, index_label='id',
             name=Songs.__tablename__, if_exists='replace')
@@ -109,31 +112,12 @@ def create_app():
         _, neighbors = neigh.kneighbors(np.array([X_song]))
         return neighbors[0][1:]
 
-    # @app.route('/populate')
-    # def populate():
-    #     engine = create_engine('sqlite:///Spotify_Songs.db')
-    #     Songs.metadata.create_all(engine)
-    #     file_name = 'https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv'
-    #     df = pd.read_csv(file_name)
-    #     db = df.to_sql(con=engine, index_label='id',
-    #             name=Songs.__tablename__, if_exists='replace')
-    #     return "Database has been made!"
 
     @app.route('/')
     def hello_world():
 
         return "Welcome to our Spotify API!"
 
-
-    #Model returns a list of songs and we return the top 10
-    @app.route('/songs', methods=['GET']) #methods=['GET'])
-    def get_songs():
-        conn = sqlite3.connect('sqlite://Spotify_Songs.db')
-        conn.row_factory = dict_factory
-        curs = conn.cursor()
-        all_songs = curs.execute('SELECT track_name, artist_name, genre FROM songs LIMIT 10;').fetchall()
-
-        return jsonify(all_songs)
 
     @app.route('/track/<track_id>', methods=['GET'])  # /<track_id>
     def track(track_id):
