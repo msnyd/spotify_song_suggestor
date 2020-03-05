@@ -95,14 +95,6 @@ def create_app():
     X = processed_df[features].values
     neigh.fit(X)
 
-
-    engine = create_engine('sqlite:///Spotify_Songs.db')
-    Songs.metadata.create_all(engine)
-    file_name = 'https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/app/most_popular_spotify_songs.csv'
-    df = pd.read_csv(file_name)
-    db = df.to_sql(con=engine, index_label='id',
-            name=Songs.__tablename__, if_exists='replace')
-
     def closest_ten(df: pd.DataFrame, X_array: np.ndarray, song_id: int) -> List[Tuple]:
         song = df.iloc[song_id]
         X_song = X[song_id]
