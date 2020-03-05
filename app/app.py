@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from typing import List, Tuple
 
 DB = SQLAlchemy()
-df = pd.read_csv('https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv')
+df = pd.read_csv('app\most_popular.csv')
 
 
 
@@ -55,16 +55,15 @@ def create_app():
     app = Flask(__name__)
     DB = SQLAlchemy()
 
-    
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://Spotify_Songs.db"
     engine = create_engine('sqlite:///Spotify_Songs.db')
     Songs.metadata.create_all(engine)
-    file_name = 'https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv'
+    file_name = r'app\most_popular.csv'
     df = pd.read_csv(file_name)
     db = df.to_sql(con=engine, index_label='id',
             name=Songs.__tablename__, if_exists='replace')
     
-    df = pd.read_csv('https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv')
+    df = pd.read_csv(r'app\most_popular.csv')
 
     def pre_process(df):
         time_sig_encoding = { '0/4' : 0, '1/4' : 1, 
@@ -99,7 +98,7 @@ def create_app():
 
     engine = create_engine('sqlite:///Spotify_Songs.db')
     Songs.metadata.create_all(engine)
-    file_name = 'https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv'
+    file_name = r'app\most_popular.csv'
     df = pd.read_csv(file_name)
     db = df.to_sql(con=engine, index_label='id',
             name=Songs.__tablename__, if_exists='replace')
@@ -123,12 +122,8 @@ def create_app():
     @app.route('/')
     def hello_world():
 
-        return "Welcome to our Spotify API!  Route to /populate first to populate the database"
+        return "Welcome to our Spotify API!"
 
-    #TODO make a route that takes in json data and converts it to match the database?
-    @app.route('/user/data')
-    def user_data():
-        pass
 
     #Model returns a list of songs and we return the top 10
     @app.route('/songs', methods=['GET']) #methods=['GET'])
