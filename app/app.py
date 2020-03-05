@@ -14,6 +14,10 @@ DB = SQLAlchemy()
 df = pd.read_csv('https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv')
 
 
+
+
+
+
 def closest_ten(df: pd.DataFrame, X_array: np.ndarray ,song_id: int) -> List[Tuple] :
     song = df.iloc[song_id]
     X_song = X[song_id]
@@ -66,6 +70,7 @@ def dict_factory(cursor, row):
 def create_app():
     app = Flask(__name__)
 
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://Spotify_Songs.db"
     
     df = pd.read_csv('https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv')
 
@@ -102,9 +107,9 @@ def create_app():
 
     @app.route('/populate')
     def populate():
+        DB.drop_all()
         engine = create_engine('sqlite:///Spotify_Songs.db')
         Songs.metadata.create_all(engine)
-        DB.drop_all()
         file_name = 'https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv'
         df = pd.read_csv(file_name)
         DB = df.to_sql(con=engine, index_label='id',
@@ -124,7 +129,7 @@ def create_app():
     #Model returns a list of songs and we return the top 10
     @app.route('/songs', methods=['GET']) #methods=['GET'])
     def get_songs():
-        conn = sqlite3.connect('Spotify_Songs.db')
+        conn = sqlite3.connect('sqlite://Spotify_Songs.db')
         conn.row_factory = dict_factory
         curs = conn.cursor()
         all_songs = curs.execute('SELECT track_name, artist_name, genre FROM songs LIMIT 10;').fetchall()
