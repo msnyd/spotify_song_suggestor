@@ -9,6 +9,7 @@ from sklearn import preprocessing  # for category encoder
 from sklearn.neighbors import NearestNeighbors
 from sklearn.model_selection import train_test_split
 from typing import List, Tuple
+from flask_cors import CORS
 
 DB = SQLAlchemy()
 
@@ -47,6 +48,7 @@ class Songs(DB.Model):
 def create_app():
 
     app = Flask(__name__)
+    CORS(app)
 
     # Makes the database persist on Heroku
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://Spotify_Songs.db"
