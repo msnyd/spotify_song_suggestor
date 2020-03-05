@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from typing import List, Tuple
 
 DB = SQLAlchemy()
-df = pd.read_csv('https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv')
+df = pd.read_csv('https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv')
 
 
 
@@ -56,7 +56,7 @@ def create_app():
     DB = SQLAlchemy()
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://Spotify_Songs.db"
     
-    df = pd.read_csv('https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv')
+    df = pd.read_csv('https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv')
 
     def pre_process(df):
         time_sig_encoding = { '0/4' : 0, '1/4' : 1, 
@@ -99,7 +99,7 @@ def create_app():
     def populate():
         engine = create_engine('sqlite://Spotify_Songs.db')
         Songs.metadata.create_all(engine)
-        file_name = 'https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv'
+        file_name = 'https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv'
         df = pd.read_csv(file_name)
         db = df.to_sql(con=engine, index_label='id',
                 name=Songs.__tablename__, if_exists='replace')
