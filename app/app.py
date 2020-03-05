@@ -69,7 +69,7 @@ def dict_factory(cursor, row):
 
 def create_app():
     app = Flask(__name__)
-
+    DB = SQLAlchemy()
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://Spotify_Songs.db"
     
     df = pd.read_csv('https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv')
@@ -108,12 +108,14 @@ def create_app():
     @app.route('/populate')
     def populate():
         DB.drop_all()
+        DB.create_all()
         engine = create_engine('sqlite:///Spotify_Songs.db')
         Songs.metadata.create_all(engine)
         file_name = 'https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv'
         df = pd.read_csv(file_name)
-        DB = df.to_sql(con=engine, index_label='id',
+        db = df.to_sql(con=engine, index_label='id',
                 name=Songs.__tablename__, if_exists='replace')
+        DB.commit_all()
         return "Database has been made!"
 
     @app.route('/')
