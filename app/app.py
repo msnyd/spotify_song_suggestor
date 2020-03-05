@@ -54,7 +54,15 @@ def dict_factory(cursor, row):
 def create_app():
     app = Flask(__name__)
     DB = SQLAlchemy()
+
+    
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://Spotify_Songs.db"
+    engine = create_engine('sqlite:///Spotify_Songs.db')
+    Songs.metadata.create_all(engine)
+    file_name = 'https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv'
+    df = pd.read_csv(file_name)
+    db = df.to_sql(con=engine, index_label='id',
+            name=Songs.__tablename__, if_exists='replace')
     
     df = pd.read_csv('https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv')
 
@@ -86,8 +94,15 @@ def create_app():
     neigh = NearestNeighbors(n_neighbors=11)
     features = list(processed_df.columns[4:])
     X = processed_df[features].values
-
     neigh.fit(X)
+
+
+    engine = create_engine('sqlite:///Spotify_Songs.db')
+    Songs.metadata.create_all(engine)
+    file_name = 'https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv'
+    df = pd.read_csv(file_name)
+    db = df.to_sql(con=engine, index_label='id',
+            name=Songs.__tablename__, if_exists='replace')
 
     def closest_ten(df: pd.DataFrame, X_array: np.ndarray, song_id: int) -> List[Tuple]:
         song = df.iloc[song_id]
@@ -95,15 +110,15 @@ def create_app():
         _, neighbors = neigh.kneighbors(np.array([X_song]))
         return neighbors[0][1:]
 
-    @app.route('/populate')
-    def populate():
-        engine = create_engine('sqlite:///Spotify_Songs.db')
-        Songs.metadata.create_all(engine)
-        file_name = 'https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv'
-        df = pd.read_csv(file_name)
-        db = df.to_sql(con=engine, index_label='id',
-                name=Songs.__tablename__, if_exists='replace')
-        return "Database has been made!"
+    # @app.route('/populate')
+    # def populate():
+    #     engine = create_engine('sqlite:///Spotify_Songs.db')
+    #     Songs.metadata.create_all(engine)
+    #     file_name = 'https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv'
+    #     df = pd.read_csv(file_name)
+    #     db = df.to_sql(con=engine, index_label='id',
+    #             name=Songs.__tablename__, if_exists='replace')
+    #     return "Database has been made!"
 
     @app.route('/')
     def hello_world():
