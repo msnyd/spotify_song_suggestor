@@ -97,7 +97,7 @@ def create_app():
 
     @app.route('/populate')
     def populate():
-        engine = create_engine('sqlite://Spotify_Songs.db')
+        engine = create_engine('sqlite:///Spotify_Songs.db')
         Songs.metadata.create_all(engine)
         file_name = 'https://raw.githubusercontent.com/msnyd/spotify_song_suggestor/master/most_popular_spotify_songs.csv'
         df = pd.read_csv(file_name)
