@@ -61,8 +61,6 @@ def create_app():
     file_name = 'most_popular_spotify_songs.csv'
     df = pd.read_csv(file_name)
 
-    DB.drop_all()
-    DB.create_all()
     db = df.to_sql(con=engine, index_label='id',
             name=Songs.__tablename__, if_exists='replace')
     
