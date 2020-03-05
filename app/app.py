@@ -89,15 +89,11 @@ def create_app():
 
     neigh.fit(X)
 
-    def closest_ten(df: pd.DataFrame, X_array: np.ndarray ,song_id: int) -> List[Tuple] :
+    def closest_ten(df: pd.DataFrame, X_array: np.ndarray, song_id: int) -> List[Tuple]:
         song = df.iloc[song_id]
         X_song = X[song_id]
         _, neighbors = neigh.kneighbors(np.array([X_song]))
-        # song_list = []
-        # for idx in neighbors[0][2:]: 
-        #     row = df.iloc[idx]
-        #     song_list.append((row.artist_name, row.track_name))
-        return  neighbors[0][1:]
+        return neighbors[0][1:]
 
     @app.route('/populate')
     def populate():
@@ -129,19 +125,18 @@ def create_app():
 
         return jsonify(all_songs)
 
-    @app.route('/track/<track_id>', methods=['GET']) #/<track_id>
+    @app.route('/track/<track_id>', methods=['GET'])  # /<track_id>
     def track(track_id):
         track_id = int(track_id)
-        song_recs = closest_ten(df, X, track_id)
-        conn = sqlite3.connect('sqlite://Spotify_Songs.db')
+        conn = sqlite3.connect('Spotify_Songs.db')
         conn.row_factory = dict_factory
         curs = conn.cursor()
         songlist = []
-        #cursor and conn
+        song_recs = closest_ten(df, X, track_id)
         for idx in song_recs:
-            song = cursor.execute(f'select * from Songs where id=={idx}')
+            song = curs.execute(f'select * from Songs where id=={idx};').fetchall()
             songlist.append(song)
+        
         return jsonify(songlist)
-
 
     return app
