@@ -142,7 +142,7 @@ def create_app():
         song_recs = closest_ten(df, X, track_id)
         for idx in song_recs:
             song = curs.execute(
-                f'SELECT DISTINCT id, track_name, artist_name, genre, track_id FROM Songs WHERE id=={idx};').fetchone()
+                f'SELECT DISTINCT * FROM Songs WHERE id=={idx};').fetchone()
 
             songlist.append(song)
         #songlist = tuple(songlist)
