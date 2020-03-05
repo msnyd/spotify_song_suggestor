@@ -97,7 +97,7 @@ def create_app():
 
     @app.route('/populate')
     def populate():
-        engine = create_engine('Spotify_Songs.db')
+        engine = create_engine('sqlite://Spotify_Songs.db')
         Songs.metadata.create_all(engine)
         file_name = 'https://raw.githubusercontent.com/aguilargallardo/DS-Unit-2-Applied-Modeling/master/data/SpotifyFeatures.csv'
         df = pd.read_csv(file_name)
