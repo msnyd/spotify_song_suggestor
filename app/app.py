@@ -10,6 +10,8 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.model_selection import train_test_split
 from typing import List, Tuple
 from flask_cors import CORS
+import random
+
 
 DB = SQLAlchemy()
 
@@ -91,7 +93,7 @@ def create_app():
     '''
     processed_df = pre_process(df)
 
-    neigh = NearestNeighbors(n_neighbors=11)
+    neigh = NearestNeighbors(n_neighbors=25)
     features = list(processed_df.columns[4:])
     X = processed_df[features].values
     neigh.fit(X)
@@ -120,8 +122,8 @@ def create_app():
 
     '''
         Main API route that takes in a Track ID sent from the user and pairs it with
-        a unique track_id from the database and returns the closest songs from our
-        Machine Learning model.
+        a unique track_id from the database and returns the 25 closest songs and chooses
+         a random 10 from our Machine Learning model.
     '''
     @app.route('/track/<track_id>', methods=['GET'])
     def track(track_id):
@@ -135,6 +137,7 @@ def create_app():
             song = curs.execute(
                 f'SELECT DISTINCT * FROM Songs WHERE id=={idx};').fetchone()
             songlist.append(song)
+        songlist = random.sample(songlist, 10)
         return jsonify(songlist)
 
     return app
